@@ -11,7 +11,7 @@ const token = '8011660653:AAEfUEkRfkqoMghaP0V_VecZZ7CSXzF9nsA';
 
 export default async function handler(req, res) {
   if (req.method !== 'POST') {
-    return res.status(200).send(`<h1>Bot Downloader Aktif ✅</h1><p>Kirim link video ke bot Telegram</p>`);
+    return res.status(200).send(`<h1>Bot Aktif ✅</h1><p>Kirim link video ke bot Telegram</p>`);
   }
 
   const rawBody = await buffer(req);
@@ -20,7 +20,9 @@ export default async function handler(req, res) {
   const chatId = body.message?.chat?.id;
   const text = body.message?.text;
 
-  if (!chatId || !text) return res.status(200).json({ ok: false });
+  if (!chatId || !text) {
+    return res.status(200).json({ ok: false });
+  }
 
   const urlRegex = /(https?:\/\/[^\s]+)/g;
   const link = text.match(urlRegex)?.[0];
@@ -30,15 +32,15 @@ export default async function handler(req, res) {
     return res.status(200).json({ ok: true });
   }
 
-  // API Dummy TikTok Downloader
+  // TikTok Downloader API (bisa diganti nanti)
   const apiURL = `https://api.tiklydown.me/api/download?url=${encodeURIComponent(link)}`;
 
   try {
     const resp = await fetch(apiURL);
     const json = await resp.json();
-    const downloadUrl = json.video_no_watermark || json.video || link;
 
-    await sendMessage(chatId, `✅ Download tanpa watermark:\n${downloadUrl}`, token);
+    const downloadUrl = json.video_no_watermark || json.video || link;
+    await sendMessage(chatId, `✅ Link download:\n${downloadUrl}`, token);
   } catch (err) {
     await sendMessage(chatId, `❌ Gagal download. Link tidak valid atau API error.`, token);
   }
